@@ -21,7 +21,7 @@ def load_instance(filename):
         points = [Point([float(f) for f in l.split(",")]) for l in lines]
     return distance, points
 
-def is_in_relation(set_a, set_b, points, distance): 
+def related(set_a, set_b, points, distance): 
     min_in_list = sorted([set_a, set_b], key = lambda our_set : len(our_set))
     for point_a in min_in_list[0]:
         for point_b in min_in_list[1]:
@@ -52,7 +52,7 @@ def graph_course(points, distance, plan_division, first_set, pile, related_compo
     for line in range(-2,3):
         for colomn in range(-2,3):
             if borders(line, colomn, just_visited, visited_set, len(plan_division)):
-                if is_in_relation(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + line][just_visited[1] + colomn], points, distance):
+                if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + line][just_visited[1] + colomn], points, distance):
                     pile.append((just_visited[0] + line, just_visited[1] + colomn))
                     visited_set.add((just_visited[0] + line, just_visited[1] + colomn))
                     nonused_sets.remove((just_visited[0] + line, just_visited[1] + colomn))
