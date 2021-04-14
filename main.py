@@ -41,36 +41,9 @@ def intiating_matrix(distance, points):
 
 
 def borders(i, j, just_visited, visited_set, our_length):
-    return ((i, j) not in [(0,0), (-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length)
+    return ((i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length)
 
-def graph_course(points, distance, plan_division, first_set, pile, related_component, nonused_sets, visited_set):
-    just_visited = pile.pop()
-    if len(related_component) == 0:
-        related_component.append(plan_division[just_visited[0]][just_visited[1]])
-    else:
-        related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
-    for line in range(-2,3):
-        for colomn in range(-2,3):
-            if borders(line, colomn, just_visited, visited_set, len(plan_division)):
-                if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + line][just_visited[1] + colomn], points, distance):
-                    pile.append((just_visited[0] + line, just_visited[1] + colomn))
-                    visited_set.add((just_visited[0] + line, just_visited[1] + colomn))
-                    nonused_sets.remove((just_visited[0] + line, just_visited[1] + colomn))
-    visited_set.add(just_visited)
-
-
-def print_components_sizes(distance, points):
-    """
-    affichage des tailles triees de chaque composante
-    """
-    if distance == 0:
-        print([1 for _ in range(len(points))])
-        return
-    all_related_components = []
-    visited_set = set()
-    plan_division = intiating_matrix(distance, points)
-    our_length = len(plan_division)
-    nonused_sets = set( (i,j) for i in range(our_length) for j in range(our_length))
+def graph_course(plan_division, points, distance, result, nonused_sets, visited_set, our_length):
     counting = 0
     while counting < our_length**2:
         first_set = nonused_sets.pop()
@@ -81,10 +54,37 @@ def print_components_sizes(distance, points):
         pile = [first_set]
         related_component = []
         while len(pile) != 0:
-            graph_course(points, distance, plan_division, first_set, pile, related_component, nonused_sets, visited_set)
+            just_visited = pile.pop()
+            if len(related_component) == 0:
+                related_component.append(plan_division[just_visited[0]][just_visited[1]])
+            else:
+                related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
+            for i in range(-2,3):
+                for j in range(-2,3):
+                    if borders(i, j, just_visited, visited_set, len(plan_division)):
+                        if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + i][just_visited[1] + j], points, distance):
+                            pile.append((just_visited[0] + i, just_visited[1] + j))
+                            visited_set.add((just_visited[0] + i, just_visited[1] + j))
+                            nonused_sets.remove((just_visited[0] + i, just_visited[1] + j))
             counting += 1
-        all_related_components.append(len(related_component[0]))
-    print(sorted(all_related_components)[::-1])
+            visited_set.add(just_visited)
+        result.append(len(related_component[0]))
+
+
+def print_components_sizes(distance, points):
+    """
+    affichage des tailles triees de chaque composante
+    """
+    if distance == 0:
+        print([1 for _ in range(len(points))])
+        return
+    result = []
+    visited_set = set()
+    plan_division = intiating_matrix(distance, points)
+    our_length = len(plan_division)
+    nonused_sets = set((i,j) for i in range(our_length) for j in range(our_length))
+    graph_course(plan_division, points, distance, result, nonused_sets, visited_set, our_length)
+    print(sorted(result)[::-1])
 
 
 
