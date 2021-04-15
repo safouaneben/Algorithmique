@@ -43,7 +43,20 @@ def intiating_matrix(distance, points):
 def borders(i, j, just_visited, visited_set, our_length):
     return ((i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length)
 
-def graph_course(plan_division, points, distance, result, nonused_sets, visited_set, our_length):
+
+
+def print_components_sizes(distance, points):
+    """
+    affichage des tailles triees de chaque composante
+    """
+    if distance == 0:
+        print([1 for _ in range(len(points))])
+        return
+    result = []
+    visited_set = set()
+    plan_division = intiating_matrix(distance, points)
+    our_length = len(plan_division)
+    nonused_sets = set((i,j) for i in range(our_length) for j in range(our_length))
     counting = 0
     while counting < our_length**2:
         first_set = nonused_sets.pop()
@@ -69,21 +82,6 @@ def graph_course(plan_division, points, distance, result, nonused_sets, visited_
             counting += 1
             visited_set.add(just_visited)
         result.append(len(related_component[0]))
-
-
-def print_components_sizes(distance, points):
-    """
-    affichage des tailles triees de chaque composante
-    """
-    if distance == 0:
-        print([1 for _ in range(len(points))])
-        return
-    result = []
-    visited_set = set()
-    plan_division = intiating_matrix(distance, points)
-    our_length = len(plan_division)
-    nonused_sets = set((i,j) for i in range(our_length) for j in range(our_length))
-    graph_course(plan_division, points, distance, result, nonused_sets, visited_set, our_length)
     print(sorted(result)[::-1])
 
 
