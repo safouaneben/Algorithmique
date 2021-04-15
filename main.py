@@ -29,22 +29,6 @@ def related(set_a, set_b, points, distance):
                 return True
     return False
 
-
-def intiating_matrix(distance, points):
-    plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
-    for point_index in range(len(points)):
-        line_index = int((sqrt(2)*points[point_index].coordinates[0])/distance)
-        colomn_index = int((sqrt(2)*points[point_index].coordinates[1])/distance)
-        plan_division[line_index][colomn_index].add(point_index)
-    return plan_division
-
-
-
-def borders(i, j, just_visited, visited_set, our_length):
-    return ((i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length)
-
-
-
 def print_components_sizes(distance, points):
     """
     affichage des tailles triees de chaque composante
@@ -52,6 +36,11 @@ def print_components_sizes(distance, points):
     if distance == 0:
         print([1 for _ in range(len(points))])
         return
+    plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
+    for point_index in range(len(points)):
+        line_index = int((sqrt(2)*points[point_index].coordinates[0])/distance)
+        colomn_index = int((sqrt(2)*points[point_index].coordinates[1])/distance)
+        plan_division[line_index][colomn_index].add(point_index)
     result = []
     visited_set = set()
     plan_division = intiating_matrix(distance, points)
@@ -74,7 +63,7 @@ def print_components_sizes(distance, points):
                 related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
             for i in range(-2,3):
                 for j in range(-2,3):
-                    if borders(i, j, just_visited, visited_set, len(plan_division)):
+                    if (i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length:
                         if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + i][just_visited[1] + j], points, distance):
                             pile.append((just_visited[0] + i, just_visited[1] + j))
                             visited_set.add((just_visited[0] + i, just_visited[1] + j))
@@ -83,11 +72,6 @@ def print_components_sizes(distance, points):
             visited_set.add(just_visited)
         result.append(len(related_component[0]))
     print(sorted(result)[::-1])
-
-
-
-
-
 
 def main():
     """
