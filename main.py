@@ -43,10 +43,9 @@ def print_components_sizes(distance, points):
         plan_division[line_index][colomn_index].add(point_index)
     result = []
     visited_set = set()
-    our_length = len(plan_division)
-    nonused_sets = set((i,j) for i in range(our_length) for j in range(our_length))
+    nonused_sets = set((i,j) for i in range(len(plan_division)) for j in range(len(plan_division)))
     counting = 0
-    while counting < our_length**2:
+    while counting < len(plan_division)**2:
         first_set = nonused_sets.pop()
         if len(plan_division[first_set[0]][first_set[1]]) == 0:
             counting += 1
@@ -62,7 +61,7 @@ def print_components_sizes(distance, points):
                 related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
             for i in range(-2,3):
                 for j in range(-2,3):
-                    if (i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < our_length and 0 <= just_visited[1] + j < our_length:
+                    if (i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < len(plan_division) and 0 <= just_visited[1] + j < len(plan_division):
                         if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + i][just_visited[1] + j], points, distance):
                             pile.append((just_visited[0] + i, just_visited[1] + j))
                             visited_set.add((just_visited[0] + i, just_visited[1] + j))
