@@ -43,7 +43,6 @@ def print_components_sizes(distance, points):
         plan_division[line_index][colomn_index].add(point_index)
     result = []
     visited_set = set()
-    plan_division = intiating_matrix(distance, points)
     our_length = len(plan_division)
     nonused_sets = set((i,j) for i in range(our_length) for j in range(our_length))
     counting = 0
