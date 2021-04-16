@@ -24,12 +24,19 @@ def load_instance(filename):
     return distance, points
 
 def is_in_relation(set1, set2, points, distance):
-    l = sorted([set1, set2], key = lambda sett : len(sett))
-    for point0 in l[0]:
-        for point1 in l[1]:
+    if 0 in [len(set1), len(set2)]:
+        return (False, False)
+    for point0 in set1:
+        for point1 in set2:
             if points[point0].distance_to(points[point1]) <= distance:
-                return True
-    return False
+                return (True, True)
+    return (False, True)
+    
+def signe(entier):
+    if entier == 0:
+        return 0
+    else:
+        return int(abs(entier)/entier)
 
 
 
@@ -56,23 +63,32 @@ def print_components_sizes(distance, points):
             element_deja_traitee.add(element_initial)
             continue
         pile = [element_initial]
-        composante_connexe = []
+        composante_connexe = 0
         while len(pile) != 0:
             couramment_traitee = pile.pop()
-            if len(composante_connexe) == 0:
-                composante_connexe.append(pavage_plan[couramment_traitee[0]][couramment_traitee[1]])
-            else:
-                composante_connexe[0] = composante_connexe[0] | pavage_plan[couramment_traitee[0]][couramment_traitee[1]]
-            for ligne in range(-2,3):
-                for colonne in range(-2,3):
-                    if (ligne, colonne) != (0,0) and (couramment_traitee[0]+ligne, couramment_traitee[1]+colonne) not in element_deja_traitee and (ligne,colonne) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and 0 <= couramment_traitee[0]+ligne < len(pavage_plan) and 0 <= couramment_traitee[1]+colonne < len(pavage_plan):
-                        if is_in_relation(pavage_plan[couramment_traitee[0]][couramment_traitee[1]], pavage_plan[couramment_traitee[0]+ligne][couramment_traitee[1]+colonne], points, distance):
+            composante_connexe += len(pavage_plan[couramment_traitee[0]][couramment_traitee[1]])
+            a_ne_pas_traiter = [(-2,-2),(-2,2),(2,-2),(2,2)]
+            for ligne in [0, -1,-2, 1, 2]:
+                for colonne in [0, -1, -2 , 1, 2]:
+                    if (ligne, colonne) != (0,0) and (couramment_traitee[0]+ligne, couramment_traitee[1]+colonne) not in element_deja_traitee and (ligne,colonne) not in a_ne_pas_traiter and 0 <= couramment_traitee[0]+ligne < len(pavage_plan) and 0 <= couramment_traitee[1]+colonne < len(pavage_plan):
+                        in_relation = is_in_relation(pavage_plan[couramment_traitee[0]][couramment_traitee[1]], pavage_plan[couramment_traitee[0]+ligne][couramment_traitee[1]+colonne], points, distance)
+                        if in_relation[0]:
                             pile.append((couramment_traitee[0]+ligne, couramment_traitee[1]+colonne))
                             element_deja_traitee.add((couramment_traitee[0]+ligne, couramment_traitee[1]+colonne))
                             element_non_traite.remove((couramment_traitee[0]+ligne, couramment_traitee[1]+colonne))
+                        if not in_relation[0] and in_relation[1]:
+                            if ligne == 0:
+                                for h in range(-1,2):
+                                    a_ne_pas_traiter.append((h, colonne + signe(colonne)))
+                            if colonne == 0:
+                                for r in range(-1,2):
+                                    a_ne_pas_traiter.append((ligne + signe(ligne), r))
+                                    
+                                    
+                                    
             nombre_traitees += 1
             element_deja_traitee.add(couramment_traitee)
-        composantes_connexes.append(len(composante_connexe[0]))
+        composantes_connexes.append(composante_connexe)
     print(sorted(composantes_connexes)[::-1])
 
 
