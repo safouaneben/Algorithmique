@@ -24,7 +24,7 @@ def load_instance(filename):
 
 def initiating_matrix(distance, points):
     """
-    initialise la matrice des sets, sous forme d'un cadrillage du plan.
+    initialise la matrice des sets, sous forme d'un quadrillage du plan.
     """
     plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
     for point_index in range(len(points)):
