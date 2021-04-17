@@ -31,8 +31,33 @@ def related(set_a, set_b, points, distance):
                 return True
     return False
     
+def borders(i, j, just_visited, visited_set, length):
+    return((i, j) not in [(0, 0), (-2, -2),(-2, 2),(2, -2),(2, 2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < length and 0 <= just_visited[1] + j < length)
 
 
+def initiating_matrix(distance, points):
+    plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
+    for point_index in range(len(points)):
+        line_index = int((sqrt(2)*points[point_index].coordinates[0])/distance)
+        colomn_index = int((sqrt(2)*points[point_index].coordinates[1])/distance)
+        plan_division[line_index][colomn_index].add(point_index)
+    return plan_division
+
+
+def graph_course(points, distance, plan_division, related_component, pile, nonused_sets, visited_set):
+    just_visited = pile.pop()
+    if len(related_component) == 0:
+        related_component.append(plan_division[just_visited[0]][just_visited[1]])
+    else:
+        related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
+    for i in range(-2,3):
+        for j in range(-2,3):
+            if borders(i, j, just_visited, visited_set, len(plan_division)):
+                if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + i][just_visited[1] + j], points, distance):
+                    pile.append((just_visited[0] + i, just_visited[1] + j))
+                    visited_set.add((just_visited[0] + i, just_visited[1] + j))
+                    nonused_sets.remove((just_visited[0] + i, just_visited[1] + j))
+    visited_set.add(just_visited)
 
 def print_components_sizes(distance, points):
     """
@@ -41,11 +66,7 @@ def print_components_sizes(distance, points):
     if distance == 0:
         print([1 for _ in range(len(points))])
         return
-    plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
-    for point_index in range(len(points)):
-        line_index = int((sqrt(2)*points[point_index].coordinates[0])/distance)
-        colomn_index = int((sqrt(2)*points[point_index].coordinates[1])/distance)
-        plan_division[line_index][colomn_index].add(point_index)
+    plan_division = initiating_matrix(distance, points)
     result = []
     visited_set = set()
     nonused_sets = set((i,j) for i in range(len(plan_division)) for j in range(len(plan_division)))
@@ -59,22 +80,11 @@ def print_components_sizes(distance, points):
         pile = [first_set]
         related_component = []
         while len(pile) != 0:
-            just_visited = pile.pop()
-            if len(related_component) == 0:
-                related_component.append(plan_division[just_visited[0]][just_visited[1]])
-            else:
-                related_component[0] = related_component[0] | plan_division[just_visited[0]][just_visited[1]]
-            for i in range(-2,3):
-                for j in range(-2,3):
-                    if (i, j)!= (0, 0) and (i, j) not in [(-2,-2),(-2,2),(2,-2),(2,2)] and (just_visited[0] + i, just_visited[1] + j) not in visited_set and 0 <= just_visited[0] + i < len(plan_division) and 0 <= just_visited[1] + j < len(plan_division):
-                        if related(plan_division[just_visited[0]][just_visited[1]], plan_division[just_visited[0] + i][just_visited[1] + j], points, distance):
-                            pile.append((just_visited[0] + i, just_visited[1] + j))
-                            visited_set.add((just_visited[0] + i, just_visited[1] + j))
-                            nonused_sets.remove((just_visited[0] + i, just_visited[1] + j))
+            graph_course(points, distance, plan_division, related_component, pile, nonused_sets, visited_set)
             counting += 1
-            visited_set.add(just_visited)
         result.append(len(related_component[0]))
     print(sorted(result)[::-1])
+
 def main():
     """
     ne pas modifier: on charge une instance et on affiche les tailles
