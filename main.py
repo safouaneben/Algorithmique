@@ -24,9 +24,9 @@ def load_instance(filename):
 
 def initiating_matrix(distance, points):
     """
-    initialise la matrice des sets, sous forme d'un quadrillage du plan.
+    initialise la matrice des carrés ici nonused_sets, sous forme d'un quadrillage du plan.
     """
-    plan_division = [[set() for _ in range(int(sqrt(2)/distance) + 1)] for _ in range(int(sqrt(2)/distance) + 1)] 
+    plan_division = [[set() for _ in range(1 + int(sqrt(2)/distance))] for _ in range(1 + int(sqrt(2)/distance))] 
     for point_index in range(len(points)):
         line_index = int((sqrt(2)*points[point_index].coordinates[0])/distance)
         colomn_index = int((sqrt(2)*points[point_index].coordinates[1])/distance)
@@ -52,7 +52,7 @@ def borders(i, j, my_point, visited_set, length):
     return((i, j) not in [(0, 0), (-2, -2),(-2, 2),(2, -2),(2, 2)] and my_point not in visited_set and 0 <= my_point[0] < length and 0 <= my_point[1] < length)
 
 
-def graph_course(points, distance, plan_division, related_component, reserve, nonused_sets, visited_set):
+def near_squares(points, distance, plan_division, related_component, reserve, nonused_sets, visited_set):
     """
     effectue la recherche nécassaire dans les carreaux adjacents, en utilisant la pile RESERVE
     """
@@ -93,7 +93,7 @@ def print_components_sizes(distance, points):
         reserve = [first_set]
         related_component = []
         while len(reserve) != 0:
-            graph_course(points, distance, plan_division, related_component, reserve, nonused_sets, visited_set)
+            near_squares(points, distance, plan_division, related_component, reserve, nonused_sets, visited_set)
             further_step += 1
         result.append(len(related_component[0]))
     result.sort()
